@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wallet | MoneyMentor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f4fef7;
+      color: #111;
+      padding: 1rem;
+    }
+
+    h2, h3 {
+      font-weight: 600;
+    }
+
+    .section {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .expenses-header {
+      margin-bottom: 1rem;
+    }
+
+    .expenses-summary {
+      text-align: center;
+    }
+
+    .expenses-summary .amount {
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0.5rem 0;
+    }
+
+    .top-categories ul {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .top-categories li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      font-size: 1rem;
+    }
+
+    .pie-breakdown {
+      display: flex;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .pie-chart {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: conic-gradient(#f87171 0% 36%, #4ade80 36% 100%);
+      margin-right: 1rem;
+    }
+
+    .legend p {
+      font-size: 0.9rem;
+      margin: 0.25rem 0;
+    }
+
+    .red-dot, .green-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .red-dot { background: #f87171; }
+    .green-dot { background: #4ade80; }
+
+    .wallet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1rem;
+    }
+
+    .wallet-header h3 {
+      font-size: 1.5rem;
+    }
+
+    .wallet-header small {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .card-scroller {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      margin: 1rem 0;
+      padding-bottom: 0.5rem;
+    }
+
+    .card-slide img {
+      flex: 0 0 auto;
+      width: 670px;
+      height: 400px;
+      border-radius: 16px;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .transactions {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .transactions li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #eee;
+      font-size: 1rem;
+    }
+
+    .transactions li:last-child {
+      border-bottom: none;
+    }
+    .card-slide {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .card-slide.selected::after {
+    content: "✅";
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    background: white;
+    border-radius: 50%;
+    padding: 2px;
+  }
+
+  .card-slide img {
+    border: 3px solid transparent;
+    transition: border 0.3s ease;
+  }
+
+  .card-slide.selected img {
+    border-color: #4ade80;
+  }
+  * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #3b82f6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 3rem;
+  align-items: center;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  max-width: 120px;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+  transform: scale(1.05);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+.pagination {
+  display: flex;
+  gap: 2rem;
+  font-weight: 500;
+}
+
+.pagination a {
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.pagination a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #3b82f6;
+  transition: width 0.3s ease;
+}
+
+.pagination a:hover::after {
+  width: 100%;
+}
+
+.hero {
+  text-align: center;
+  padding: 7rem 2rem;
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff, #dbeafe);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.hero .subtitle {
+  color: #475569;
+  font-size: 1.5rem;
+  margin-bottom: 2.5rem;
+  display: inline-block;
+  min-width: 150px;
+  min-height: 32px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+
+.subscribe-form {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.subscribe-form input {
+  padding: 0.8rem 1.2rem;
+  width: 300px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.subscribe-form input:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.subscribe-form button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.subscribe-form button:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.team-section {
+  padding: 5rem 0;
+  background: white;
+  text-align: center;
+}
+
+.team-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #0f172a;
+}
+
+.carousel-container {
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 2rem;
+  animation: scrollCarousel 15s linear infinite;
+  width: max-content;
+}
+
+@keyframes scrollCarousel {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.team-card {
+  min-width: 250px;
+  padding: 1.5rem;
+  background: #f1f5f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background: #f8fafc;
+}
+
+.team-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #0f172a;
+}
+
+.team-card p a {
+  color: #3b82f6;
+  font-size: 0.95rem;
+}
+
+.team-card p a:hover {
+  text-decoration: underline;
+}
+
+
+.problem-section {
+  padding: 5rem 0;
+  background: #f8fafc;
+}
+
+.problem-section .container {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.problem-section .info-box {
+  flex: 1;
+  min-width: 300px;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.problem-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
+}
+
+.problem-section ul {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.problem-section li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.problem-section li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+.info-graphic {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stats-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.stats-image:hover {
+  transform: scale(1.02);
+}
+
+
+.mission-section {
+  padding: 5rem 0;
+  background: white;
+}
+
+.mission-section .container {
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+
+.mission-section .info-box {
+  flex: 1;
+  min-width: 300px;
+  padding: 2rem;
+  background: #f1f5f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.mission-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
+}
+
+.mission-section p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #334155;
+}
+
+.team-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.team-image:hover {
+  transform: scale(1.02);
+}
+
+.cta-button {
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+
+
+.footer {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 0;
+  color: #334155;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 1.5rem;
+}
+
+.footer-main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.footer-brand {
+  flex: 1;
+  min-width: 250px;
+}
+
+.footer-brand .logo {
+  margin-bottom: 1rem;
+}
+
+.footer-brand .tagline {
+  color: #64748b;
+  font-size: 1rem;
+  max-width: 250px;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.footer-column {
+  min-width: 150px;
+}
+
+.footer-column h4 {
+  color: #0f172a;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.footer-column h4::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 30px;
+  height: 2px;
+  background-color: #3b82f6;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-column ul li a {
+  color: #64748b;
+  transition: all 0.3s ease;
+}
+
+.footer-column ul li a:hover {
+  color: #3b82f6;
+  padding-left: 5px;
+}
+
+.social-newsletter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.social-media {
+  flex: 1;
+  min-width: 250px;
+}
+
+.social-media h4 {
+  color: #0f172a;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #f1f5f9;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  background-color: #e0f2fe;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.newsletter {
+  flex: 2;
+  min-width: 300px;
+}
+
+.newsletter h4 {
+  color: #0f172a;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.newsletter p {
+  color: #64748b;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.newsletter-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.newsletter-form button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.newsletter-form button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.footer-legal {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-legal a {
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.footer-legal a:hover {
+  color: #3b82f6;
+}
+
+
+@media (max-width: 768px) {
+  .footer-main, 
+  .social-newsletter {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .footer-legal {
+    justify-content: center;
+  }
+  
+  .newsletter-form {
+    flex-direction: column;
+  }
+}
+  </style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cardSlides = document.querySelectorAll('.card-slide');
+      const transactionsEl = document.querySelector('.transactions');
+  
+      const transactionsData = {
+        "American Express Blue": [
+          ["📦 Amazon", "$90.74"],
+          ["🎯 Target", "$102.62"]
+        ],
+        "American Express Platinum": [
+          ["🍔 McDonalds", "$26.23"],
+          ["🍏 Apple", "$523.62"]
+        ],
+        "Chase": [
+          ["🚗 Uber", "$14.50"],
+          ["🎬 Netflix", "$12.99"]
+        ]
+      };
+  
+      cardSlides.forEach(slide => {
+        slide.addEventListener('click', () => {
+          cardSlides.forEach(s => s.classList.remove('selected'));
+          slide.classList.add('selected');
+  
+          const cardName = slide.querySelector('img').alt;
+          const cardTxns = transactionsData[cardName] || [];
+  
+          transactionsEl.innerHTML = cardTxns.map(
+            ([vendor, amount]) => `<li><strong>${vendor}</strong> <span>${amount}</span></li>`
+          ).join('');
+        });
+      });
+    });
+  </script>
+  <header class="top-bar">
+    <div class="logo">
+      <img src="0CB7F897-C0DE-4BD2-9D9A-89A56A6033FB_4_5005_c.jpeg" alt="Logo" width="100" height="50">
+    </div>
+    <nav class="nav">
+      <div class="pagination">
+        <a href="index.html">Home</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="trends.html">Trends</a>
+        <a href="market.html">The Market</a>
+        <a href="expenses.html">Expenses</a>
+      </div>
+
+    </nav>
+  </header> 
+</head>
+<body>
+
+  <div class="section expenses-section">
+    <div class="expenses-header">
+      <h2>Good evening, User 🌃</h2>
+    </div>
+    <div class="expenses-summary">
+      <h3>Expenses</h3>
+      <p class="month">April 2025 ▼</p>
+      <p class="amount">$2,472</p>
+    </div>
+
+    <div class="top-categories">
+      <h4>Top Categories</h4>
+      <ul>
+        <li>🍽️ Food (Consider cutting back on this to save money!) <span>-$1,822</span></li>
+        <li>🛒 Grocery <span>-$320</span></li>
+        <li>🎮 Entertainment <span>-$330</span></li>
+      </ul>
+    </div>
+
+    <div class="pie-breakdown">
+      <div class="pie-chart"></div>
+      <div class="legend">
+        <p><span class="red-dot"></span>$2,472 spent</p>
+        <p><span class="green-dot"></span>$4,382 earned</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section wallet-section">
+    <div class="wallet-header">
+      <h3>Credit Card Bill | $894</h3>
+      <small>Due on 5/12</small>
+    </div>
+
+    <div class="card-scroller">
+      <div class="card-slide">
+        <img src="https://u.cubeupload.com/aiggnhlnous/4.png" alt="American Express Blue" />
+      </div>
+      <div class="card-slide">
+        <img src="https://u.cubeupload.com/ccbackground/amexplat.png" alt="American Express Platinum" />
+      </div>
+      <div class="card-slide">
+        <img src="https://u.cubeupload.com/ccbackground/chasedebit.png" alt="Chase" />
+      </div>
+    </div>
+
+    <ul class="transactions">
+      <li><strong>🍔 McDonalds</strong> <span>$26.23</span></li>
+      <li><strong>📦 Amazon</strong> <span>$90.74</span></li>
+      <li><strong>🎯 Target</strong> <span>$102.62</span></li>
+      <li><strong>🍏 Apple</strong> <span>$523.62</span></li>
+    </ul>
+  </div>
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="logo">
+            <img src="0CB7F897-C0DE-4BD2-9D9A-89A56A6033FB_4_5005_c.jpeg" alt="Money Mentor Logo" width="120" height="60">
+          </div>
+          <p class="tagline">Empowering your financial future</p>
+        </div>
+        
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>About</h4>
+            <ul>
+              <li><a href="about.html">Our Story</a></li>
+              <li><a href="team.html">Team</a></li>
+              <li><a href="careers.html">Careers</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-column">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="guides.html">Investment Guides</a></li>
+              <li><a href="https://www.investor.gov/additional-resources/spotlight/never-stop-learning">Learning Center</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-column">
+            <h4>Connect</h4>
+            <ul>
+              <li><a href="mailto:aayushwadkar08@gmail.com">Contact Us</a></li>
+              <li><a href="https://finance.yahoo.com">Financial News</a></li>
+              <li><a href="faq.html">FAQ</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+  
+      <div class="social-newsletter">
+        <div class="social-media">
+          <h4>Follow Us</h4>
+          <div class="social-icons">
+            <a href="#" class="social-icon" aria-label="Instagram">
+              <img src="Instagram_icon.png" alt="Instagram" width="24" height="24">
+            </a>
+            <a href="#" class="social-icon" aria-label="Twitter">
+              <img src="new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.webp" alt="Twitter/X" width="24" height="24">
+            </a>
+            <a href="#" class="social-icon" aria-label="TikTok">
+              <img src="tiktok-icon-free-png.webp" alt="TikTok" width="24" height="24">
+            </a>
+            <a href="#" class="social-icon" aria-label="LinkedIn">
+              <img src="linkedin-icon-free-png.webp" alt="LinkedIn" width="24" height="24">
+            </a>
+          </div>
+        </div>
+        
+        <div class="newsletter">
+          <h4>Stay Updated</h4>
+          <p>Get the latest investment tips and market trends</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Money Mentor. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
